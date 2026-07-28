@@ -1,11 +1,12 @@
 import argparse
 from pathlib import Path
 
-from auburn_weather_monitor.api import ApiError, fetch_forecast
+from auburn_weather_monitor.api import ApiError
 from auburn_weather_monitor.config import get_user_agent
 from auburn_weather_monitor.display import print_project_info, print_summary
+from auburn_weather_monitor.logging_config import configure_logging
 from auburn_weather_monitor.output import save_processed_csv, save_raw_json
-from auburn_weather_monitor.processing import forecast_periods
+from auburn_weather_monitor.service import get_forecast
 
 
 DEFAULT_LATITUDE = 32.6099
@@ -33,12 +34,24 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print setup information without calling the API.",
     )
+    parser.add_argument(
+        "--log-level",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        default="INFO",
+        help="Set the console and file logging level.",
+    )
+    parser.add_argument(
+        "--log-file",
+        type=Path,
+        help="Also write log messages to this file.",
+    )
     return parser
 
 
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
+    configure_logging(args.log_level, args.log_file)
     user_agent = get_user_agent()
 
     if args.project_info:
@@ -46,11 +59,14 @@ def main() -> None:
         return
 
     try:
-        raw_response = fetch_forecast(args.latitude, args.longitude, user_agent)
+        raw_response, records = get_forecast(
+            args.latitude,
+            args.longitude,
+            user_agent,
+        )
     except ApiError as error:
         raise SystemExit(str(error)) from error
 
-    records = forecast_periods(raw_response)
     save_raw_json(raw_response, args.raw_output)
     save_processed_csv(records, args.processed_output)
     print_summary(records, args.raw_output, args.processed_output, raw_response["forecast_url"])

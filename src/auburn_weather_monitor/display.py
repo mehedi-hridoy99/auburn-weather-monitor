@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def print_summary(
-    records: list[dict[str, str]],
+    records: list[dict[str, object]],
     raw_path: Path,
     processed_path: Path,
     forecast_url: str,

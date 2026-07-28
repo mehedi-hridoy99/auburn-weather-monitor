@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a small command-line tool for Practicum 4. It calls the National Weather Service API for a forecast near Auburn, Alabama, saves the raw API response, and creates a processed CSV file that is easier to inspect.
+This project is a command-line tool and Streamlit dashboard for an Auburn weather forecast. It calls the National Weather Service API, validates incoming data with Pydantic, saves the raw response, and creates a processed CSV file.
 
 ## API
 
@@ -24,7 +24,7 @@ One line on what I will build: I will build a small weather-monitoring project t
 
 - Python 3.11 or newer
 - `uv`
-- Internet access
+- Internet access for live forecasts
 
 ## Setup
 
@@ -50,6 +50,12 @@ Fetch the Auburn forecast and save outputs:
 uv run auburn-weather-monitor
 ```
 
+Write logs to the console and a file:
+
+```bash
+uv run auburn-weather-monitor --log-level INFO --log-file logs/weather.log
+```
+
 The default outputs are:
 
 ```text
@@ -63,11 +69,23 @@ Use a different location:
 uv run auburn-weather-monitor --latitude 32.6099 --longitude -85.4808
 ```
 
+## Dashboard
+
+Start the local Streamlit dashboard:
+
+```bash
+uv run streamlit run src/auburn_weather_monitor/dashboard.py
+```
+
+Open the local URL shown by Streamlit. Select a latitude and longitude, then choose **Load forecast**. Deployment is not required.
+
 ## How to Test
 
 ```bash
 uv run python -m pytest
 ```
+
+The tests use committed JSON fixtures and mocks. They do not contact the live National Weather Service API.
 
 ## Project Structure
 
@@ -76,10 +94,17 @@ src/auburn_weather_monitor/
   api.py          API request boundary
   cli.py          command-line interface
   config.py       local .env loading
+  dashboard.py    Streamlit interface
   display.py      terminal output
+  logging_config.py console and file logging setup
+  models.py       Pydantic runtime validation models
   output.py       raw JSON and processed CSV writers
   processing.py   forecast record extraction
+  service.py      shared CLI and dashboard workflow
 tests/
+  fixtures/       committed API response samples
+  test_api.py
+  test_logging.py
   test_processing.py
 data/
   raw/            generated raw API evidence, ignored by Git
@@ -90,7 +115,9 @@ data/
 
 - `.env`, `.venv/`, and `data/` are ignored by Git.
 - `.env.example` is committed so another person can recreate the local configuration.
-- The project uses the Python standard library only.
+- The CLI and dashboard use the same service and processing logic.
+- Pydantic produces a clear validation error when required API fields are missing or invalid.
+- Logs do not include the local user-agent value or other configuration secrets.
 
 ## Known Issues
 

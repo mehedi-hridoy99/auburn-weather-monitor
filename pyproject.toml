@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "pydantic>=2.11.7",
+    "streamlit>=1.47.0",
+]
 
 [project.scripts]
 auburn-weather-monitor = "auburn_weather_monitor.cli:main"

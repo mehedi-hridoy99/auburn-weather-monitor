@@ -1,0 +1,5 @@
+{
+  "properties": {
+    "forecast": "https://api.weather.gov/gridpoints/BMX/54,85/forecast"
+  }
+}
