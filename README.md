@@ -1,125 +1,178 @@
 # Auburn Weather Monitor
 
-## Overview
+Auburn Weather Monitor retrieves a National Weather Service forecast for Auburn,
+Alabama, validates the response, and creates JSON and CSV outputs. It provides a
+command-line interface for repeatable data collection and a local Streamlit
+dashboard for quick inspection. The project is intended for students and
+analysts who want a small, reproducible example of an API-backed Python project.
 
-This project is a command-line tool and Streamlit dashboard for an Auburn weather forecast. It calls the National Weather Service API, validates incoming data with Pydantic, saves the raw response, and creates a processed CSV file.
+## Fastest Path
 
-## API
-
-API: National Weather Service API
-
-Documentation: https://www.weather.gov/documentation/services-web-api
-
-Example request:
-
-```text
-https://api.weather.gov/points/32.6099,-85.4808
-```
-
-That request returns metadata for the requested latitude and longitude, including a forecast URL. The project then calls the forecast URL and extracts forecast periods with fields such as period name, start time, temperature, wind speed, and short forecast.
-
-One line on what I will build: I will build a small weather-monitoring project that collects forecast data for Auburn and turns it into inspectable records for later analysis or reporting.
-
-## Requirements
+Requirements:
 
 - Python 3.11 or newer
-- `uv`
-- Internet access for live forecasts
+- [`uv`](https://docs.astral.sh/uv/)
+- Internet access when requesting a new forecast
 
-## Setup
-
-Create a local `.env` file from the example:
+Restore the environment, create local configuration, and run the project:
 
 ```bash
+uv sync
 cp .env.example .env
+uv run auburn-weather-monitor
 ```
 
-Edit `.env` and replace the placeholder email in `NWS_USER_AGENT` with your contact email. The National Weather Service asks API users to send a clear user agent.
+On Windows PowerShell, copy the configuration file with:
 
-## How to Run
+```powershell
+Copy-Item .env.example .env
+```
 
-Show setup information without calling the API:
+The run writes:
+
+- `data/raw/forecast.json`: the complete point and forecast API responses
+- `data/processed/forecast_periods.csv`: one row per forecast period
+
+A committed example of both outputs is included so the project and report can
+be inspected without contacting the API.
+
+## Configuration
+
+The only supported environment variable is:
+
+| Variable | Required | Purpose |
+|---|---:|---|
+| `NWS_USER_AGENT` | Recommended | Identifies the client to the National Weather Service. Use an application name and contact email. |
+
+Create `.env` from `.env.example`, then replace the placeholder address:
+
+```text
+NWS_USER_AGENT=auburn-weather-monitor/0.1 (mailto:your-email@example.com)
+```
+
+Never commit `.env` or a private contact address. The application uses a clear
+placeholder user agent when this variable is not configured.
+
+## Command-Line Usage
+
+Show all options:
 
 ```bash
-uv run auburn-weather-monitor --project-info
+uv run auburn-weather-monitor --help
 ```
 
-Fetch the Auburn forecast and save outputs:
+Fetch the default Auburn forecast:
 
 ```bash
 uv run auburn-weather-monitor
 ```
 
-Write logs to the console and a file:
-
-```bash
-uv run auburn-weather-monitor --log-level INFO --log-file logs/weather.log
-```
-
-The default outputs are:
-
-```text
-data/raw/forecast.json
-data/processed/forecast_periods.csv
-```
-
-Use a different location:
+Choose another location:
 
 ```bash
 uv run auburn-weather-monitor --latitude 32.6099 --longitude -85.4808
 ```
 
+Write INFO-level logs to the console and a file:
+
+```bash
+uv run auburn-weather-monitor --log-level INFO --log-file logs/weather.log
+```
+
+Show configuration and output paths without calling the API:
+
+```bash
+uv run auburn-weather-monitor --project-info
+```
+
 ## Dashboard
 
-Start the local Streamlit dashboard:
+Start the local dashboard:
 
 ```bash
 uv run streamlit run src/auburn_weather_monitor/dashboard.py
 ```
 
-Open the local URL shown by Streamlit. Select a latitude and longitude, then choose **Load forecast**. Deployment is not required.
+Open the local URL printed by Streamlit. Confirm or change the coordinates and
+select **Load forecast**. If a request fails, the dashboard displays the API or
+validation error so the user can retry or check the configuration.
 
-## How to Test
+## Reproducible Report
+
+The report asks how temperatures change across the available Auburn forecast
+periods. It uses the committed raw response and calls the project's validation
+and processing code.
+
+- [Report source](reports/auburn-forecast-report.qmd)
+- [Rendered PDF](reports/auburn-forecast-report.pdf)
+- [Data dictionary](docs/data-dictionary.md)
+
+After restoring the project environment and installing Quarto, rebuild it from
+the repository root:
+
+```bash
+quarto render reports/auburn-forecast-report.qmd
+```
+
+Do not edit the rendered PDF directly. Update the `.qmd`, code, or input data
+and render again.
+
+## Testing
+
+Run the automated tests:
 
 ```bash
 uv run python -m pytest
 ```
 
-The tests use committed JSON fixtures and mocks. They do not contact the live National Weather Service API.
+The tests use committed fixtures and controlled mocks. They do not contact the
+live National Weather Service API.
+
+## Inputs and Outputs
+
+The default input is the National Weather Service points endpoint for latitude
+`32.6099` and longitude `-85.4808`. That response supplies the forecast URL.
+Pydantic validates required point, forecast, and period fields before processing.
+
+The raw JSON preserves API evidence. The processed CSV contains the fields
+described in the [data dictionary](docs/data-dictionary.md).
 
 ## Project Structure
 
 ```text
-src/auburn_weather_monitor/
-  api.py          API request boundary
-  cli.py          command-line interface
-  config.py       local .env loading
-  dashboard.py    Streamlit interface
-  display.py      terminal output
-  logging_config.py console and file logging setup
-  models.py       Pydantic runtime validation models
-  output.py       raw JSON and processed CSV writers
-  processing.py   forecast record extraction
-  service.py      shared CLI and dashboard workflow
-tests/
-  fixtures/       committed API response samples
-  test_api.py
-  test_logging.py
-  test_processing.py
-data/
-  raw/            generated raw API evidence, ignored by Git
-  processed/      generated processed CSV, ignored by Git
+src/auburn_weather_monitor/  application, validation, and reporting logic
+tests/                       offline tests and API fixtures
+data/raw/                    committed raw API response
+data/processed/              committed processed forecast CSV
+docs/data-dictionary.md      output schema and provenance
+reports/                     authoritative Quarto source and rendered PDF
+AGENTS.md                    durable contributor guidance
+LICENSE                      MIT License
 ```
 
-## Notes
+## Common Failures
 
-- `.env`, `.venv/`, and `data/` are ignored by Git.
-- `.env.example` is committed so another person can recreate the local configuration.
-- The CLI and dashboard use the same service and processing logic.
-- Pydantic produces a clear validation error when required API fields are missing or invalid.
-- Logs do not include the local user-agent value or other configuration secrets.
+- **API request failed:** Check internet access and try again. The National
+  Weather Service may also be temporarily unavailable.
+- **Validation failed:** The API response did not contain a required field or
+  value type. Keep the error message and inspect the raw service behavior before
+  changing the model.
+- **User-agent not configured:** Copy `.env.example` to `.env` and replace the
+  placeholder email.
+- **`uv` or `quarto` not found:** Install the missing tool and open a new
+  terminal before rerunning the documented command.
+- **Dashboard does not open:** Use the exact Streamlit command above and open
+  the local URL printed in the terminal.
 
-## Known Issues
+## License and Maintainer Guidance
 
-- The National Weather Service API can fail if there is no internet connection or if the service is temporarily unavailable.
-- The first version only processes the forecast periods returned by the API. It does not yet validate weather alerts or compare multiple locations.
+This project is available under the [MIT License](LICENSE). Contributors should
+read [AGENTS.md](AGENTS.md) before changing project behavior or documentation.
+
+## Known Limitations
+
+- Forecasts depend on the availability and current schema of the National
+  Weather Service API.
+- The dashboard runs locally and is not deployed.
+- The project reports forecast periods for one coordinate pair at a time. It
+  does not compare locations or verify forecast accuracy.

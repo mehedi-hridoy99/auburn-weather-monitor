@@ -1,7 +1,7 @@
 [project]
 name = "auburn-weather-monitor"
 version = "0.1.0"
-description = "Add your description here"
+description = "Validated National Weather Service forecasts for Auburn, Alabama"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -18,5 +18,11 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "ipykernel>=6.30.0",
+    "matplotlib>=3.10.0",
+    "nbclient>=0.10.2",
+    "nbformat>=5.10.4",
+    "pandas>=2.3.0",
+    "pyyaml>=6.0.2",
     "pytest>=9.1.1",
 ]

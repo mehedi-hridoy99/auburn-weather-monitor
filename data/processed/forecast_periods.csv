@@ -1,0 +1,15 @@
+number,name,start_time,end_time,temperature,temperature_unit,wind_speed,wind_direction,short_forecast
+1,Today,2026-07-30T07:00:00-05:00,2026-07-30T18:00:00-05:00,92,F,0 to 5 mph,N,Patchy Fog then Sunny
+2,Tonight,2026-07-30T18:00:00-05:00,2026-07-31T06:00:00-05:00,72,F,0 to 5 mph,N,Partly Cloudy then Patchy Fog
+3,Friday,2026-07-31T06:00:00-05:00,2026-07-31T18:00:00-05:00,92,F,0 to 5 mph,SW,Patchy Fog then Mostly Sunny
+4,Friday Night,2026-07-31T18:00:00-05:00,2026-08-01T06:00:00-05:00,75,F,0 to 5 mph,SW,Mostly Cloudy then Slight Chance Rain Showers
+5,Saturday,2026-08-01T06:00:00-05:00,2026-08-01T18:00:00-05:00,86,F,0 to 5 mph,SW,Showers And Thunderstorms
+6,Saturday Night,2026-08-01T18:00:00-05:00,2026-08-02T06:00:00-05:00,73,F,5 mph,S,Showers And Thunderstorms
+7,Sunday,2026-08-02T06:00:00-05:00,2026-08-02T18:00:00-05:00,85,F,5 to 10 mph,S,Showers And Thunderstorms
+8,Sunday Night,2026-08-02T18:00:00-05:00,2026-08-03T06:00:00-05:00,73,F,0 to 5 mph,S,Showers And Thunderstorms then Chance Showers And Thunderstorms
+9,Monday,2026-08-03T06:00:00-05:00,2026-08-03T18:00:00-05:00,86,F,0 to 5 mph,S,Showers And Thunderstorms Likely
+10,Monday Night,2026-08-03T18:00:00-05:00,2026-08-04T06:00:00-05:00,73,F,0 to 5 mph,S,Showers And Thunderstorms Likely then Slight Chance Showers And Thunderstorms
+11,Tuesday,2026-08-04T06:00:00-05:00,2026-08-04T18:00:00-05:00,87,F,0 to 5 mph,S,Chance Rain Showers then Chance Showers And Thunderstorms
+12,Tuesday Night,2026-08-04T18:00:00-05:00,2026-08-05T06:00:00-05:00,74,F,0 to 5 mph,S,Chance Showers And Thunderstorms then Mostly Cloudy
+13,Wednesday,2026-08-05T06:00:00-05:00,2026-08-05T18:00:00-05:00,88,F,0 to 5 mph,SW,Slight Chance Rain Showers then Chance Showers And Thunderstorms
+14,Wednesday Night,2026-08-05T18:00:00-05:00,2026-08-06T06:00:00-05:00,74,F,0 mph,,Chance Showers And Thunderstorms then Partly Cloudy

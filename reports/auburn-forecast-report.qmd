@@ -1,0 +1,140 @@
+---
+title: "Auburn Forecast Temperature Report"
+author: "Md Mehedi Hasan"
+date: "2026-07-30"
+format:
+  typst:
+    papersize: us-letter
+    margin:
+      x: 1in
+      y: 1in
+jupyter: python3
+execute:
+  echo: true
+  warning: false
+---
+
+## Summary
+
+This report asks: **How do forecast temperatures change across the available
+Auburn forecast periods?** It uses the committed National Weather Service
+response and the project's existing validation and processing code. The answer
+is a concise description of the forecast temperature range, followed by the
+period-level evidence.
+
+```{python}
+#| label: setup
+#| include: false
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
+from IPython.display import Markdown, display
+
+from auburn_weather_monitor.reporting import (
+    load_forecast_records,
+    temperature_summary,
+)
+
+root = Path.cwd()
+if not (root / "data").exists():
+    root = root.parent
+
+raw_path = root / "data" / "raw" / "forecast.json"
+records = load_forecast_records(raw_path)
+summary = temperature_summary(records)
+forecast = pd.DataFrame(records)
+forecast["start_time"] = pd.to_datetime(forecast["start_time"])
+forecast["end_time"] = pd.to_datetime(forecast["end_time"])
+```
+
+```{python}
+#| label: summary-answer
+#| echo: false
+display(
+    Markdown(
+        f"The committed forecast contains **{summary['period_count']} periods**. "
+        f"Temperatures range from **{summary['lowest']:.0f}°{summary['unit']}** "
+        f"during **{summary['lowest_period']}** to "
+        f"**{summary['highest']:.0f}°{summary['unit']}** during "
+        f"**{summary['highest_period']}**. The period average is "
+        f"**{summary['average']:.1f}°{summary['unit']}**."
+    )
+)
+```
+
+## Data and Parameters
+
+The source is the National Weather Service points and gridpoint forecast APIs.
+The location is latitude 32.6099 and longitude -85.4808, representing Auburn,
+Alabama. The raw response is stored in `data/raw/forecast.json`. The report
+includes every period in that response without additional filtering.
+Temperatures use the unit supplied by the API. The report was rendered on
+July 30, 2026.
+
+The project function `load_forecast_records()` reads the committed raw response,
+then calls the same Pydantic validation and transformation behavior used by the
+command-line interface.
+
+## Forecast Table
+
+```{python}
+#| label: tbl-forecast
+#| echo: false
+#| tbl-cap: "Forecast periods and temperatures"
+lines = [
+    "| # | Period | Starts | Temperature |",
+    "|---:|---|---|---:|",
+]
+for index, row in forecast.iterrows():
+    starts = row["start_time"].strftime("%b %d, %I %p")
+    temperature = f"{row['temperature']}°{row['temperature_unit']}"
+    lines.append(f"| {index + 1} | {row['name']} | {starts} | {temperature} |")
+display(Markdown("\n".join(lines)))
+```
+
+## Temperature Pattern
+
+```{python}
+#| label: fig-temperatures
+#| echo: false
+#| fig-cap: "Forecast temperature by period in chronological order"
+#| fig-width: 8
+#| fig-height: 4.5
+period_numbers = range(1, len(forecast) + 1)
+figure, axis = plt.subplots()
+axis.plot(period_numbers, forecast["temperature"], marker="o", color="#1f5f8b")
+axis.set_xlabel("Forecast period")
+axis.set_ylabel(f"Temperature (°{summary['unit']})")
+axis.set_xticks(list(period_numbers))
+axis.grid(axis="y", alpha=0.3)
+figure.tight_layout()
+plt.show()
+```
+
+## Interpretation
+
+```{python}
+#| label: interpretation
+#| echo: false
+display(
+    Markdown(
+        "The figure shows the expected alternating pattern between warmer "
+        "daytime periods and cooler nighttime periods. "
+        f"The difference between the highest and lowest forecast values is "
+        f"**{summary['highest'] - summary['lowest']:.0f}°{summary['unit']}**. "
+        "These values are forecasts rather than observations, so they describe "
+        "the service's current prediction and should not be interpreted as "
+        "measured temperatures or forecast accuracy."
+    )
+)
+```
+
+## Rebuild
+
+After restoring the environment with `uv sync` and installing Quarto, run this
+command from the repository root:
+
+```bash
+quarto render reports/auburn-forecast-report.qmd
+```

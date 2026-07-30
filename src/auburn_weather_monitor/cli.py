@@ -1,3 +1,5 @@
+"""Provide the command-line interface for forecast collection."""
+
 import argparse
 from pathlib import Path
 
@@ -14,6 +16,7 @@ DEFAULT_LONGITUDE = -85.4808
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the CLI parser and document all supported options."""
     parser = argparse.ArgumentParser(
         description="Fetch a National Weather Service forecast near Auburn, Alabama."
     )
@@ -49,6 +52,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    """Run the CLI, reporting API failures as clear command-line errors."""
     parser = build_parser()
     args = parser.parse_args()
     configure_logging(args.log_level, args.log_file)

@@ -1,3 +1,5 @@
+"""Format concise command-line project and forecast summaries."""
+
 from pathlib import Path
 
 
@@ -7,6 +9,7 @@ def print_summary(
     processed_path: Path,
     forecast_url: str,
 ) -> None:
+    """Print output locations and the first processed forecast period."""
     print("Auburn weather monitor")
     print(f"Forecast URL: {forecast_url}")
     print(f"Raw output: {raw_path}")
@@ -22,6 +25,7 @@ def print_summary(
 
 
 def print_project_info(user_agent: str) -> None:
+    """Print configuration status without revealing the user-agent value."""
     configured = user_agent != "auburn-weather-monitor/0.1 (contact email not configured)"
     print("Auburn weather monitor project info")
     print("Package: auburn-weather-monitor")

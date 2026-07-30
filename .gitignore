@@ -1,7 +1,9 @@
 # Python-generated files
 __pycache__/
 .pytest_cache/
+.test-tmp-practicum6/
 .ruff_cache/
+.quarto/
 *.py[oc]
 build/
 dist/
@@ -13,7 +15,6 @@ wheels/
 .venv-practicum5/
 .uv-cache/
 
-# Local secrets and generated data
+# Local secrets and logs
 .env
-data/
 *.log

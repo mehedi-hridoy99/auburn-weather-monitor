@@ -1,3 +1,5 @@
+"""Access and validate National Weather Service API responses."""
+
 import json
 import logging
 from urllib.error import HTTPError, URLError
@@ -17,6 +19,7 @@ class ApiError(RuntimeError):
 
 
 def fetch_json(url: str, user_agent: str, timeout: int = 30) -> dict:
+    """Fetch and decode one JSON response or raise ``ApiError``."""
     logger.debug("Requesting %s", url)
     request = Request(
         url,
@@ -37,6 +40,7 @@ def fetch_json(url: str, user_agent: str, timeout: int = 30) -> dict:
 
 
 def fetch_forecast(latitude: float, longitude: float, user_agent: str) -> dict:
+    """Fetch validated point and forecast responses for one coordinate pair."""
     point_url = f"{NWS_BASE_URL}/points/{latitude:.4f},{longitude:.4f}"
     point_data = fetch_json(point_url, user_agent)
     try:

@@ -1,3 +1,5 @@
+"""Coordinate API access and processing for both user interfaces."""
+
 import logging
 
 from auburn_weather_monitor.api import fetch_forecast
@@ -12,6 +14,7 @@ def get_forecast(
     longitude: float,
     user_agent: str,
 ) -> tuple[dict, list[dict[str, object]]]:
+    """Fetch and process one forecast, returning raw data and stable records."""
     logger.info("Requesting forecast for latitude %.4f, longitude %.4f", latitude, longitude)
     raw_response = fetch_forecast(latitude, longitude, user_agent)
     records = forecast_periods(raw_response)

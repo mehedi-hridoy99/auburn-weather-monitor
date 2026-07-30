@@ -1,3 +1,5 @@
+"""Display validated forecast records in a local Streamlit dashboard."""
+
 import streamlit as st
 
 from auburn_weather_monitor.api import ApiError
@@ -9,10 +11,11 @@ from auburn_weather_monitor.service import get_forecast
 
 st.set_page_config(page_title="Auburn Weather Monitor", page_icon="🌤️")
 st.title("Auburn Weather Monitor")
-st.write("View a validated National Weather Service forecast.")
+st.write("Enter coordinates and load a validated National Weather Service forecast.")
 
 latitude = st.number_input("Latitude", value=DEFAULT_LATITUDE, format="%.4f")
 longitude = st.number_input("Longitude", value=DEFAULT_LONGITUDE, format="%.4f")
+st.caption("A live request requires internet access. No API key is required.")
 
 if st.button("Load forecast", type="primary"):
     configure_logging("INFO")

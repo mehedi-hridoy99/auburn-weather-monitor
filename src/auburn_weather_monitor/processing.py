@@ -1,7 +1,10 @@
+"""Convert validated NWS forecast periods into stable output records."""
+
 from auburn_weather_monitor.models import ForecastResponse
 
 
 def forecast_periods(raw_response: dict) -> list[dict[str, object]]:
+    """Validate and transform raw forecast periods into CSV-ready records."""
     periods = raw_response["forecast"]["properties"].get("periods", [])
     validated = ForecastResponse.model_validate({"properties": {"periods": periods}})
     records: list[dict[str, object]] = []
